@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:taxi_user_app/tabpages/earning_tab_page.dart';
-import 'package:taxi_user_app/tabpages/home_tab_page.dart';
-import 'package:taxi_user_app/tabpages/profile_tab_page.dart';
-import 'package:taxi_user_app/tabpages/rating_tab_page.dart';
+
+import '/tabpages/earning_tab_page.dart';
+import '/tabpages/home_tab_page.dart';
+import '/tabpages/profile_tab_page.dart';
+import '/tabpages/rating_tab_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -46,7 +47,7 @@ class _MainScreenState extends State<MainScreen>
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
         controller: tabController,
-        children: const [
+        children: [
           HomeTabPage(),
           EarningTabPage(),
           RatingTabPage(),

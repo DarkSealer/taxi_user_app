@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:taxi_user_app/configmaps.dart';
-import 'package:taxi_user_app/main.dart';
-import 'package:taxi_user_app/screens/mainscreen.dart';
-import '/widgets/progressDialog.dart';
+
+import '/configmaps.dart';
+import '/main.dart';
+import '/screens/mainscreen.dart';
 
 class CarInfoScreen extends StatelessWidget {
   CarInfoScreen({Key? key}) : super(key: key);

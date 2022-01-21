@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:taxi_user_app/configmaps.dart';
-import 'package:taxi_user_app/screens/carinfoscreen.dart';
+
+import '/configmaps.dart';
+import '/screens/carinfoscreen.dart';
 
 import '/main.dart';
-import '/screens/mainscreen.dart';
 import '/widgets/progressdialog.dart';
 
 import '/screens/loginscreen.dart';

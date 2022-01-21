@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:taxi_user_app/configmaps.dart';
+import 'package:taxi_user_app/screens/carinfoscreen.dart';
 
 import '/main.dart';
 import '/screens/mainscreen.dart';
@@ -41,7 +43,7 @@ class RegisterScreen extends StatelessWidget {
               height: 1,
             ),
             const Text(
-              "Inregistreaza un Pasager",
+              "Inregistreaza un driver",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
@@ -246,15 +248,15 @@ class RegisterScreen extends StatelessWidget {
       // print(
       //     "Name: ${nameTextEditingController.text}, Phone: ${phoneTextEditingController.text}, Email: ${emailTextEditingController.text}");
 
-      userRef.child("users").child(firebaseUser.uid).set(userDataMap);
+      driverRef.child(firebaseUser.uid).set(userDataMap);
+      currentfirebaseUser = firebaseUser;
 
       // display success message
       displayToastMessage(
           "Felicitari. Contul dumneavoastra a fost creat cu succes", context);
 
       // load the MainScreen
-      Navigator.pushNamedAndRemoveUntil(
-          context, MainScreen.idScreen, (route) => false);
+      Navigator.pushNamed(context, CarInfoScreen.idScreen);
       return;
     }
 

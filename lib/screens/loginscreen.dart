@@ -3,7 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '/widgets/progressDialog.dart';
-import '../main.dart';
+import '/main.dart';
 import 'registerscreen.dart';
 import 'mainscreen.dart';
 
@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
               height: 1,
             ),
             const Text(
-              "Autentificare ca Pasager",
+              "Autentificare ca driver",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,

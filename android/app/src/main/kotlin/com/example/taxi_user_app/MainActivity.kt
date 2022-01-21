@@ -1,4 +1,4 @@
-package com.example.taxi_user_app
+package com.geektec.taxi_driver_app
 
 import io.flutter.embedding.android.FlutterActivity
 

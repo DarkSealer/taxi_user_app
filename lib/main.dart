@@ -3,13 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:taxi_user_app/screens/carinfoscreen.dart';
 
 import '/screens/mainscreen.dart';
 import '/screens/loginscreen.dart';
 import '/screens/registerscreen.dart';
 import 'datahandler/appdata.dart';
 
-DatabaseReference userRef = FirebaseDatabase.instance.ref();
+DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
+DatabaseReference driverRef = FirebaseDatabase.instance.ref().child("drivers");
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,18 +28,20 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AppData(),
       child: MaterialApp(
-        title: 'Taxi Rider App',
+        title: 'Taxi Driver App',
         theme: ThemeData(
           fontFamily: "Bolt",
           primarySwatch: Colors.blue,
         ),
-        initialRoute: FirebaseAuth.instance.currentUser == null
-            ? LoginScreen.idScreen
-            : MainScreen.idScreen,
+        // initialRoute: FirebaseAuth.instance.currentUser == null
+        //     ? LoginScreen.idScreen
+        //     : MainScreen.idScreen,
+        initialRoute: MainScreen.idScreen,
         routes: {
           MainScreen.idScreen: (context) => const MainScreen(),
           RegisterScreen.idScreen: (context) => RegisterScreen(),
           LoginScreen.idScreen: (context) => LoginScreen(),
+          CarInfoScreen.idScreen: (context) => CarInfoScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

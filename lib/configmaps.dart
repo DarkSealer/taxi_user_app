@@ -6,3 +6,4 @@ String mapKey = "AIzaSyAALYM8a49G3M_WTZytgesrxNmMIQersaU";
 String language = "ro";
 User? firebaseUser;
 Users? userCurrentInfo;
+User? currentfirebaseUser;

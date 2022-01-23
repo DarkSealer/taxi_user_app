@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:taxi_driver_app/configmaps.dart';
 
 import '/widgets/progressDialog.dart';
 import '/main.dart';
@@ -112,7 +113,7 @@ class LoginScreen extends StatelessWidget {
                       }
 
                       // call login method
-                      loginUser(context);
+                      loginAndAuthentificateUser(context);
                     },
                     child: const SizedBox(
                       height: 50,
@@ -160,7 +161,7 @@ class LoginScreen extends StatelessWidget {
 
   final _firebaseAuth = FirebaseAuth.instance;
 
-  void loginUser(BuildContext context) async {
+  void loginAndAuthentificateUser(BuildContext context) async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -187,12 +188,10 @@ class LoginScreen extends StatelessWidget {
       //   print('Data : ${snapshot.value}');
       // });
 
-      await userRef
-          .child("users")
-          .child(firebaseUser.uid)
-          .get()
-          .then((DataSnapshot snap) {
+      await driverRef.child(firebaseUser.uid).get().then((DataSnapshot snap) {
         if (snap.value != null) {
+          currentfirebaseUser = firebaseUser;
+
           Navigator.pushNamedAndRemoveUntil(
               context, MainScreen.idScreen, (route) => false);
 

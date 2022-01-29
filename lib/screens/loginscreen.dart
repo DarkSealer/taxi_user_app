@@ -188,7 +188,7 @@ class LoginScreen extends StatelessWidget {
       //   print('Data : ${snapshot.value}');
       // });
 
-      await driverRef.child(firebaseUser.uid).get().then((DataSnapshot snap) {
+      await driversRef.child(firebaseUser.uid).get().then((DataSnapshot snap) {
         if (snap.value != null) {
           currentfirebaseUser = firebaseUser;
 
@@ -216,16 +216,5 @@ class LoginScreen extends StatelessWidget {
     // displayToastMessage(
     // "A aparut o eroare. Va rugam sa incercati din nou",
     // context);
-  }
-
-  void displayToastMessage(String msg, BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
   }
 }

@@ -13,7 +13,9 @@ import '/screens/registerscreen.dart';
 import 'datahandler/appdata.dart';
 
 DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
-DatabaseReference driverRef = FirebaseDatabase.instance.ref().child("drivers");
+DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+DatabaseReference newRequestRef =
+    FirebaseDatabase.instance.ref().child("rideRequests");
 DatabaseReference? rideRequestRef = FirebaseDatabase.instance
     .ref()
     .child("drivers")

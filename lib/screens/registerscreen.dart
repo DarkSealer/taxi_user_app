@@ -248,7 +248,7 @@ class RegisterScreen extends StatelessWidget {
       // print(
       //     "Name: ${nameTextEditingController.text}, Phone: ${phoneTextEditingController.text}, Email: ${emailTextEditingController.text}");
 
-      driverRef.child(firebaseUser.uid).set(userDataMap);
+      driversRef.child(firebaseUser.uid).set(userDataMap);
       currentfirebaseUser = firebaseUser;
 
       // display success message
@@ -264,17 +264,5 @@ class RegisterScreen extends StatelessWidget {
     Navigator.pop(context);
     // error occured - display error message
     displayToastMessage("Utilizatorul nu a putut fi creat", context);
-  }
-
-  // display a message with Toast
-  void displayToastMessage(String msg, BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
   }
 }

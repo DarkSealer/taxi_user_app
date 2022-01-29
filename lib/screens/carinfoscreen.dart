@@ -143,20 +143,9 @@ class CarInfoScreen extends StatelessWidget {
       "car_model": carModelTextEditingController.text,
     };
 
-    driverRef.child(userId).child("car_details").set(carInfoMap);
+    driversRef.child(userId).child("car_details").set(carInfoMap);
 
     Navigator.pushNamedAndRemoveUntil(
         context, MainScreen.idScreen, (route) => false);
-  }
-
-  void displayToastMessage(String msg, BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
   }
 }

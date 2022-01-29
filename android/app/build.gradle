@@ -47,6 +47,7 @@ android {
         applicationId "com.geektec.taxi_driver_app"
         minSdkVersion 21
         targetSdkVersion 31
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

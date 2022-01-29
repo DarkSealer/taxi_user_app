@@ -1,9 +1,13 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
+import 'package:taxi_driver_app/models/drivers.dart';
+import 'package:taxi_driver_app/notifications/push_notification_service.dart';
 
 import '/configmaps.dart';
 import '/main.dart';
@@ -17,46 +21,63 @@ class HomeTabPage extends StatefulWidget {
 
 class _HomeTabPageState extends State<HomeTabPage> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
-
   late GoogleMapController newGoogleMapController;
-
-  late Position currentPosition;
-
   var geoLocator = Geolocator();
-
   String driverStatusText = "Offline Now - Go Online  ";
-
   Color driverStatusColor = Colors.red;
-
   bool isDriverAvailable = false;
+
+  final CameraPosition _kGooglePlex = const CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    getCurrentDriverInfo();
+  }
+
+  // get the user current position
+  void locatePosition() async {
+    await Geolocator.requestPermission();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    currentPosition = position;
+    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
+
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
+
+    newGoogleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    // String address =
+    //     await AssistantMethods.searchCoordinateAddress(position, context);
+    // print("This is your Address: $address");
+  }
+
+  void getCurrentDriverInfo() async {
+    currentfirebaseUser = await FirebaseAuth.instance.currentUser!;
+
+    driversRef.child(currentfirebaseUser!.uid).get().then((dataSnapshot) {
+      if (dataSnapshot.value != null) {
+        driversInformation = Drivers.fromSnapshot(dataSnapshot);
+      }
+    });
+
+    PushNotificationService pushNotificationService = PushNotificationService();
+
+    pushNotificationService.initialize(context);
+    String? token = await pushNotificationService.getToken();
+    print("Token:: $token");
+  }
 
   @override
   Widget build(BuildContext context) {
-    const CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.42796133580664, -122.085749655962),
-      zoom: 14.4746,
-    );
-
-    // get the user current position
-    void locatePosition() async {
-      await Geolocator.requestPermission();
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
-      currentPosition = position;
-      LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-
-      CameraPosition cameraPosition =
-          CameraPosition(target: latLngPosition, zoom: 14);
-
-      newGoogleMapController
-          .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
-      // String address =
-      //     await AssistantMethods.searchCoordinateAddress(position, context);
-      // print("This is your Address: $address");
-    }
-
     return Stack(
       children: [
         GoogleMap(
@@ -161,6 +182,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     Geofire.setLocation(currentfirebaseUser!.uid, currentPosition.latitude,
         currentPosition.longitude);
 
+    rideRequestRef!.set("searching"); // make the driver "available" for a ride
     rideRequestRef!.onValue.listen((event) {
       //
     });
@@ -177,16 +199,5 @@ class _HomeTabPageState extends State<HomeTabPage> {
       LatLng latlng = LatLng(position.latitude, position.longitude);
       newGoogleMapController.animateCamera(CameraUpdate.newLatLng(latlng));
     });
-  }
-
-  void displayToastMessage(String msg, BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-            label: 'OK', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
   }
 }

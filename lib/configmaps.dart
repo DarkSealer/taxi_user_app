@@ -18,6 +18,9 @@ StreamSubscription<Position>? rideStreamSubscription;
 final assetsAudioPlayer = AssetsAudioPlayer();
 late Position currentPosition;
 late Drivers driversInformation;
+String title = '';
+double starCounter = 0;
+String rideType = '';
 
 void displayToastMessage(String msg, BuildContext context) {
   final scaffold = ScaffoldMessenger.of(context);

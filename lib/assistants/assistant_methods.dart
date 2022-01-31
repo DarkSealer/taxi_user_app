@@ -3,7 +3,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:taxi_driver_app/main.dart';
+import 'package:taxi_driver_app/models/history.dart';
 
 import '/datahandler/appdata.dart';
 import '/models/address.dart';
@@ -79,6 +82,13 @@ class AssistantMethods {
 
     // 1$ = 160RS
     //double totalLocalAmount = totalPriceAmount * 160
+
+    if (rideType == 'uber-x') {
+      totalPriceAmount *= 2.0;
+    } else if (rideType == 'bike') {
+      totalPriceAmount = totalPriceAmount / 2.0;
+    }
+
     return totalPriceAmount.truncate();
   }
 
@@ -95,6 +105,64 @@ class AssistantMethods {
       currentPosition.latitude,
       currentPosition.longitude,
     );
+  }
+
+  static void retrieveHistoryInfo(context) {
+    // retrieve and display Earnings
+    driversRef
+        .child(currentfirebaseUser!.uid)
+        .child('earnings')
+        .get()
+        .then((snap) {
+      if (snap.value != null) {
+        String earnings = snap.value.toString();
+        Provider.of<AppData>(context, listen: false).updateEarnings(earnings);
+      }
+    });
+
+    // retrieve and display Trip History
+    driversRef
+        .child(currentfirebaseUser!.uid)
+        .child('history')
+        .get()
+        .then((snap) {
+      // update total number of trip counts to provider
+      if (snap.value != null) {
+        Map<dynamic, dynamic> keys = snap.value as Map<dynamic, dynamic>;
+        int tripCounter = keys.length;
+        Provider.of<AppData>(context, listen: false)
+            .updateTripsCounter(tripCounter);
+
+        // update trip keys to provider
+        List<String> tripHistoryKeys = [];
+        keys.forEach((key, value) {
+          tripHistoryKeys.add(key);
+        });
+        Provider.of<AppData>(context, listen: false)
+            .updateTripKeys(tripHistoryKeys);
+        obtainTripRequestHistoryData(context);
+      }
+    });
+  }
+
+  static void obtainTripRequestHistoryData(context) {
+    var keys = Provider.of<AppData>(context, listen: false).tripHistoryKeys;
+
+    for (String key in keys) {
+      newRequestRef.child(key).get().then((snap) {
+        if (snap.value != null) {
+          var history = History.fromSnapshot(snap);
+          Provider.of<AppData>(context, listen: false).updateTripData(history);
+        }
+      });
+    }
+  }
+
+  static String formatTripDate(String date) {
+    DateTime dateTime = DateTime.parse(date);
+    String formattedDate =
+        '${DateFormat.MMMd().format(dateTime)}, ${DateFormat.y().format(dateTime)} - ${DateFormat.jm().format(dateTime)}';
+    return formattedDate;
   }
 
   // static void getCurrentOnlineUserInfo() async {

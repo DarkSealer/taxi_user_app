@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taxi_driver_app/assistants/assistant_methods.dart';
+import 'package:taxi_driver_app/configmaps.dart';
 
 class CollectFareDialog extends StatelessWidget {
   final String paymentMethod;
@@ -28,7 +29,7 @@ class CollectFareDialog extends StatelessWidget {
             const SizedBox(
               height: 22,
             ),
-            const Text("Trip Fare"),
+            Text('Trip Fare (${rideType.toUpperCase()})'),
             const SizedBox(
               height: 22,
             ),

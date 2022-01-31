@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
-import 'package:taxi_driver_app/models/drivers.dart';
-import 'package:taxi_driver_app/notifications/push_notification_service.dart';
 
+import '/assistants/assistant_methods.dart';
+import '/models/drivers.dart';
+import '/notifications/push_notification_service.dart';
 import '/configmaps.dart';
 import '/main.dart';
 
@@ -38,6 +38,68 @@ class _HomeTabPageState extends State<HomeTabPage> {
     super.initState();
 
     getCurrentDriverInfo();
+  }
+
+  void getRideType() {
+    driversRef
+        .child(currentfirebaseUser!.uid)
+        .child('car_details')
+        .child('type')
+        .get()
+        .then((snapshot) {
+      if (snapshot.value != null) {
+        setState(() {
+          rideType = snapshot.value.toString();
+        });
+      }
+    });
+  }
+
+  void getRatings() {
+    // update and display Ratings
+    driversRef
+        .child(currentfirebaseUser!.uid)
+        .child('ratings')
+        .get()
+        .then((snap) {
+      if (snap.value != null) {
+        setState(() {
+          starCounter = double.parse(snap.value.toString());
+        });
+
+        if (starCounter <= 1.5) {
+          setState(() {
+            title = 'Very Bad';
+          });
+          return;
+        }
+        if (starCounter <= 2.5) {
+          setState(() {
+            title = 'Bad';
+          });
+
+          return;
+        }
+        if (starCounter <= 3.5) {
+          setState(() {
+            title = 'Good';
+          });
+          return;
+        }
+        if (starCounter <= 4.5) {
+          setState(() {
+            title = 'Very Good';
+          });
+          return;
+        }
+        if (starCounter <= 5) {
+          setState(() {
+            title = 'Excellent';
+          });
+          return;
+        }
+      }
+    });
   }
 
   // get the user current position
@@ -72,8 +134,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
     PushNotificationService pushNotificationService = PushNotificationService();
 
     pushNotificationService.initialize(context);
-    String? token = await pushNotificationService.getToken();
-    print("Token:: $token");
+    await pushNotificationService.getToken();
+    // String? token = await pushNotificationService.getToken();
+    // print("Token:: $token");
+
+    AssistantMethods.retrieveHistoryInfo(context);
+    getRatings();
+    getRideType();
   }
 
   @override

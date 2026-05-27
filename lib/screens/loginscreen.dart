@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:taxi_driver_app/configmaps.dart';
+import 'package:taxi_driver_app/features/auth/data/services/auth_gateway.dart';
 
 import '/widgets/progressDialog.dart';
 import '/main.dart';
@@ -160,6 +161,7 @@ class LoginScreen extends StatelessWidget {
   }
 
   final _firebaseAuth = FirebaseAuth.instance;
+  late final AuthGateway _authGateway = AuthGateway(_firebaseAuth);
 
   void loginAndAuthentificateUser(BuildContext context) async {
     showDialog(
@@ -169,8 +171,8 @@ class LoginScreen extends StatelessWidget {
         },
         barrierDismissible: false);
 
-    final firebaseUser = (await _firebaseAuth
-            .signInWithEmailAndPassword(
+    final firebaseUser = (await _authGateway
+            .signIn(
       email: emailTextEditingController.text,
       password: passwordTextEditingController.text,
     )
@@ -201,7 +203,7 @@ class LoginScreen extends StatelessWidget {
         }
 
         Navigator.pop(context);
-        _firebaseAuth.signOut();
+        _authGateway.signOut();
         displayToastMessage(
             "Acest utilizator nu exista in baza de date", context);
       });

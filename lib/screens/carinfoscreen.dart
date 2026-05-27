@@ -99,7 +99,10 @@ class CarInfoScreen extends StatelessWidget {
                     const SizedBox(height: 42),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: RaisedButton(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.secondary,
+                        ),
                         onPressed: () {
                           if (carModelTextEditingController.text.isEmpty) {
                             displayToastMessage(
@@ -125,7 +128,6 @@ class CarInfoScreen extends StatelessWidget {
 
                           saveDriverCarInfo(context);
                         },
-                        color: Theme.of(context).accentColor,
                         child: Padding(
                           padding: const EdgeInsets.all(17),
                           child: Row(

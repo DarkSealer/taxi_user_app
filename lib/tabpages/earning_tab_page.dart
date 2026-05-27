@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taxi_driver_app/datahandler/appdata.dart';
 import 'package:taxi_driver_app/screens/history_screen.dart';
+import 'dart:developer';
 
 class EarningTabPage extends StatelessWidget {
   EarningTabPage({Key? key}) : super(key: key);
@@ -34,10 +35,12 @@ class EarningTabPage extends StatelessWidget {
             ),
           ),
         ),
-        FlatButton(
-          padding: const EdgeInsets.all(0),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(0),
+          ),
           onPressed: () {
-            print('go to history page');
+            log('go to history page');
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const HistoryScreen()));
           },

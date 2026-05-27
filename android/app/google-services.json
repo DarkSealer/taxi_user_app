@@ -21,7 +21,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCo8Q1TZwsdA1ZI16dF7AZJw2fe0W2Ngvw"
+          "current_key": "REPLACE_WITH_FIREBASE_WEB_API_KEY"
         }
       ],
       "services": {
@@ -50,7 +50,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCo8Q1TZwsdA1ZI16dF7AZJw2fe0W2Ngvw"
+          "current_key": "REPLACE_WITH_FIREBASE_WEB_API_KEY"
         }
       ],
       "services": {

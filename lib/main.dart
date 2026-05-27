@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider;
 
 import '/configmaps.dart';
 import 'screens/carinfoscreen.dart';
-import '/screens/carinfoscreen.dart';
 import '/screens/mainscreen.dart';
 import '/screens/loginscreen.dart';
 import '/screens/registerscreen.dart';
@@ -28,7 +28,7 @@ void main() async {
 
   currentfirebaseUser = FirebaseAuth.instance.currentUser;
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return provider.ChangeNotifierProvider(
       create: (context) => AppData(),
       child: MaterialApp(
         title: 'Taxi Driver App',

@@ -1,23 +1,33 @@
-// import 'dart:io' show Platform;
+import 'dart:developer';
 
-import 'package:assets_audio_player/assets_audio_player.dart' as AudioPlayer;
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '/models/ride_details.dart';
+import '/features/ride/data/mappers/ride_request_mapper.dart';
+import '/features/ride/data/repositories/firebase_ride_requests_repository.dart';
+import '/features/ride/domain/usecases/get_ride_request_use_case.dart';
 import '/notifications/notification_dialog.dart';
 import '../configmaps.dart';
 import '../main.dart';
 
 class PushNotificationService {
   late FirebaseMessaging firebaseMessaging;
+  late final GetRideRequestUseCase _getRideRequestUseCase;
+
+  PushNotificationService({
+    DatabaseReference? requestsRef,
+  }) {
+    _getRideRequestUseCase = GetRideRequestUseCase(
+      FirebaseRideRequestsRepository(requestsRef ?? newRequestRef),
+    );
+  }
 
   Future initialize(context) async {
     firebaseMessaging = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await firebaseMessaging.requestPermission(
+    await firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
       badge: true,
@@ -41,8 +51,7 @@ class PushNotificationService {
       }
     });
 
-    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) =>
-        retrieveUserRequestInfo(getUserRequestId(message), context));
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
   Future<String?> getToken() async {
@@ -69,7 +78,7 @@ class PushNotificationService {
     String? rideRequestId = "";
     // if (Platform.isAndroid) {
     // retrieve if is Android
-    print('This is Ride Request Id: ${message.data['ride_request_id']}');
+    log('This is Ride Request Id: ${message.data['ride_request_id']}');
     rideRequestId = message.data['ride_request_id'];
     // }
     // else if (Platform.isIOS) {
@@ -81,54 +90,23 @@ class PushNotificationService {
   }
 
   void retrieveRideRequestInfo(String rideRequestId, BuildContext context) {
-    newRequestRef
-        .child(rideRequestId)
-        .once()
-        .then((DatabaseEvent databaseEvent) {
-      if (databaseEvent.snapshot.value != null) {
-        // play sound
-        assetsAudioPlayer.open(AudioPlayer.Audio("sounds/alert.mp3"));
-        assetsAudioPlayer.play();
-
-        var values = databaseEvent.snapshot.value as Map<dynamic, dynamic>;
-        double pickUpLocationLat =
-            double.parse(values['pickup']['latitude'].toString());
-        double pickUpLocationLng =
-            double.parse(values['pickup']['longitude'].toString());
-        String pickUpAddress = values['pickup_address'].toString();
-
-        double dropOffLocationLat =
-            double.parse(values['dropoff']['latitude'].toString());
-        double dropOffLocationLng =
-            double.parse(values['dropoff']['longitude'].toString());
-        String dropOffAddress = values['dropoff_address'].toString();
-
-        String paymentMethod = values['payment_method'].toString();
-
-        String rider_name = values['rider_name'].toString();
-        String rider_phone = values['rider_phone'].toString();
-
-        RideDetails rideDetails = RideDetails(
-            pickup_address: pickUpAddress,
-            dropoff_address: dropOffAddress,
-            ride_request_id: rideRequestId,
-            payment_method: paymentMethod,
-            rider_name: rider_name,
-            rider_phone: rider_phone);
-        rideDetails.pickup = LatLng(pickUpLocationLat, pickUpLocationLng);
-        rideDetails.dropoff = LatLng(dropOffLocationLat, dropOffLocationLng);
-
-        print('Information:: ');
-        print(dropOffAddress);
-        print(pickUpAddress);
-
-        showDialog(
-          context: context,
-          builder: (BuildContext context) =>
-              NotificationDialog(rideDetails: rideDetails),
-          barrierDismissible: false,
-        );
+    _getRideRequestUseCase.call(rideRequestId).then((result) {
+      if (!result.hasData) {
+        return;
       }
+      assetsAudioPlayer.play(AssetSource('sounds/alert.mp3'));
+      final rideDetails = result.data!.toRideDetails();
+      log('Information:: ${rideDetails.dropoff_address}');
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            NotificationDialog(rideDetails: rideDetails),
+        barrierDismissible: false,
+      );
     });
   }
 }
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}

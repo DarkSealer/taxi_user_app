@@ -57,14 +57,16 @@ class CollectFareDialog extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: RaisedButton(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                ),
                 onPressed: () async {
                   Navigator.pop(context);
                   Navigator.pop(context);
 
                   AssistantMethods.enabelHomeTabLiveLocationUpdates();
                 },
-                color: Colors.green,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [

@@ -120,14 +120,16 @@ class NotificationDialog extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FlatButton(
-                    shape: RoundedRectangleBorder(
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                       side: const BorderSide(color: Colors.red),
                     ),
-                    color: Colors.white,
-                    textColor: Colors.red,
-                    padding: const EdgeInsets.all(8),
+                      foregroundColor: Colors.red,
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.all(8),
+                    ),
                     onPressed: () {
                       assetsAudioPlayer.stop();
                       Navigator.pop(context);
@@ -142,17 +144,19 @@ class NotificationDialog extends StatelessWidget {
                   const SizedBox(
                     width: 25,
                   ),
-                  RaisedButton(
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        side: const BorderSide(color: Colors.green),
+                      ),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: () {
                       assetsAudioPlayer.stop();
                       checkAvailabilityOfRide(context);
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      side: const BorderSide(color: Colors.green),
-                    ),
-                    color: Colors.green,
-                    textColor: Colors.white,
                     child: const Text(
                       "Accept",
                       style: TextStyle(fontSize: 14),

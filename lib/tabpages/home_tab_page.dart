@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_geofire/flutter_geofire.dart';
 
 import '/assistants/assistant_methods.dart';
+import '/features/home/data/services/driver_availability_service.dart';
 import '/models/drivers.dart';
 import '/notifications/push_notification_service.dart';
 import '/configmaps.dart';
@@ -26,6 +26,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   String driverStatusText = "Offline Now - Go Online  ";
   Color driverStatusColor = Colors.red;
   bool isDriverAvailable = false;
+  late final DriverAvailabilityService _driverAvailabilityService;
 
   final CameraPosition _kGooglePlex = const CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -36,6 +37,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _driverAvailabilityService = DriverAvailabilityService(
+      currentRequestRef: rideRequestRef,
+    );
 
     getCurrentDriverInfo();
   }
@@ -176,7 +180,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: RaisedButton(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: driverStatusColor,
+                  ),
                   onPressed: () {
                     // do something
                     if (!isDriverAvailable) {
@@ -201,7 +208,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
                       isDriverAvailable = false;
                     });
                   },
-                  color: driverStatusColor,
                   child: Padding(
                     padding: const EdgeInsets.all(17),
                     child: Row(
@@ -232,9 +238,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void makeDriverOfflineNow() {
-    Geofire.removeLocation(currentfirebaseUser!.uid);
-    rideRequestRef!.onDisconnect();
-    rideRequestRef!.remove();
+    _driverAvailabilityService.makeDriverOffline(
+      driverId: currentfirebaseUser!.uid,
+    );
     rideRequestRef = null;
     displayToastMessage("You are Offline Now.", context);
   }
@@ -245,11 +251,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
     currentPosition = position;
 
-    Geofire.initialize("availableDrivers");
-    Geofire.setLocation(currentfirebaseUser!.uid, currentPosition.latitude,
-        currentPosition.longitude);
-
-    rideRequestRef!.set("searching"); // make the driver "available" for a ride
+    _driverAvailabilityService.makeDriverOnline(
+      driverId: currentfirebaseUser!.uid,
+      position: currentPosition,
+    );
     rideRequestRef!.onValue.listen((event) {
       //
     });
@@ -260,8 +265,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
         Geolocator.getPositionStream().listen((Position position) {
       currentPosition = position;
       if (isDriverAvailable) {
-        Geofire.setLocation(
-            currentfirebaseUser!.uid, position.latitude, position.longitude);
+        _driverAvailabilityService.updateLiveLocation(
+          driverId: currentfirebaseUser!.uid,
+          position: position,
+        );
       }
       LatLng latlng = LatLng(position.latitude, position.longitude);
       newGoogleMapController.animateCamera(CameraUpdate.newLatLng(latlng));

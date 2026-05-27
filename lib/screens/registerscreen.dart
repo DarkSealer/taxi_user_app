@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:taxi_driver_app/features/auth/data/services/auth_gateway.dart';
 
 import '/configmaps.dart';
 import '/screens/carinfoscreen.dart';
@@ -20,6 +21,7 @@ class RegisterScreen extends StatelessWidget {
   TextEditingController passwordTextEditingController = TextEditingController();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  late final AuthGateway _authGateway = AuthGateway(_firebaseAuth);
 
   @override
   Widget build(BuildContext context) {
@@ -221,8 +223,8 @@ class RegisterScreen extends StatelessWidget {
             message: "Se inregistreaza. Va rugam asteptati.",
           );
         });
-    final firebaseUser = (await _firebaseAuth
-            .createUserWithEmailAndPassword(
+    final firebaseUser = (await _authGateway
+            .register(
       email: emailTextEditingController.text,
       password: passwordTextEditingController.text,
     )

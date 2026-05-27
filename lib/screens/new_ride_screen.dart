@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -10,7 +11,6 @@ import '/assistants/assistant_methods.dart';
 import '/assistants/map_kit_assistant.dart';
 import '/configmaps.dart';
 import '/main.dart';
-import '/models/direction_details.dart';
 import '/models/ride_details.dart';
 import '/widgets/progressdialog.dart';
 
@@ -34,7 +34,7 @@ class _NewRideScreenState extends State<NewRideScreen> {
   Set<Circle> circleSet = Set<Circle>();
   Set<Polyline> polylineSet = Set<Polyline>();
   List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
+  PolylinePoints polylinePoints = PolylinePoints(apiKey: mapKey);
   double mapPaddingFromBottom = 0;
   var geoLocator = Geolocator();
   var locationOptions =
@@ -260,7 +260,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: RaisedButton(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: btnColor,
+                        ),
                         onPressed: () async {
                           // update the Arrived button
                           if (status == "accepted") {
@@ -315,7 +318,6 @@ class _NewRideScreenState extends State<NewRideScreen> {
                             endTheTrip();
                           }
                         },
-                        color: btnColor,
                         child: Padding(
                           padding: const EdgeInsets.all(17),
                           child: Row(
@@ -361,12 +363,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
 
     Navigator.pop(context);
 
-    print("This is Encoded Points: ${details!.encodedPoints}");
+    log("This is Encoded Points: ${details!.encodedPoints}");
 
-    PolylinePoints polylinePoints = PolylinePoints();
-    // decode the encoded polyline points
     List<PointLatLng> decodePolylinePointsResult =
-        polylinePoints.decodePolyline(details.encodedPoints);
+        PolylinePoints.decodePolyline(details.encodedPoints);
 
     polylineCoordinates.clear();
 

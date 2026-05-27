@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,14 +8,14 @@ import 'package:geolocator/geolocator.dart';
 import '/models/all_users.dart';
 import 'models/drivers.dart';
 
-String mapKey = "AIzaSyAALYM8a49G3M_WTZytgesrxNmMIQersaU";
+const String mapKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
 String language = "ro";
 User? firebaseUser;
 Users? userCurrentInfo;
 User? currentfirebaseUser;
 StreamSubscription<Position>? homeTabPageStreamSubscription;
 StreamSubscription<Position>? rideStreamSubscription;
-final assetsAudioPlayer = AssetsAudioPlayer();
+final assetsAudioPlayer = AudioPlayer();
 late Position currentPosition;
 late Drivers driversInformation;
 String title = '';

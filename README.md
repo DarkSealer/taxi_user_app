@@ -1,16 +1,47 @@
-# taxi_driver_app
+# Taxi Driver App
 
-A new Flutter project.
+Taxi driver mobile app built with Flutter, Firebase, Google Maps, and geolocation.
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Flutter (latest stable)
+- Dart SDK (3.4+)
+- Android Studio / Xcode toolchains configured
+- Firebase project configured for Android/iOS
 
-A few resources to get you started if this is your first Flutter project:
+## Environment Variables
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+The project uses environment values for API keys.  
+Create a local `/.env` file (already ignored by git) with:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```env
+GOOGLE_MAPS_API_KEY=REPLACE_WITH_GOOGLE_MAPS_API_KEY
+FIREBASE_WEB_API_KEY=REPLACE_WITH_FIREBASE_WEB_API_KEY
+```
+
+Important:
+- Never commit real keys.
+- Rotate keys if they were previously committed.
+
+## Project Setup
+
+1. Install dependencies:
+   - `flutter pub get`
+2. Configure platform keys:
+   - Android: set your Maps key in `android/app/src/main/AndroidManifest.xml`
+   - iOS: set your Maps key in `ios/Runner/AppDelegate.swift`
+   - Firebase: ensure `android/app/google-services.json` and iOS Firebase config are valid for your project
+3. Run the app:
+   - `flutter run`
+
+## Quality Checks
+
+- Analyze: `flutter analyze`
+- Test: `flutter test`
+
+## Architecture Direction
+
+The codebase is being migrated incrementally to Clean Architecture:
+- `lib/core/` for shared primitives
+- `lib/features/<feature>/domain|data|presentation` for feature modules
+- Legacy code remains during migration and is replaced feature-by-feature

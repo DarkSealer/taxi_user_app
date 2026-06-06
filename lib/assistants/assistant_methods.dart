@@ -1,7 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,14 +6,23 @@ import 'package:taxi_driver_app/main.dart';
 import 'package:taxi_driver_app/models/history.dart';
 
 import '/datahandler/appdata.dart';
-import '/models/address.dart';
-import '/models/all_users.dart';
 import '/models/direction_details.dart';
 
 import '/assistants/requestassistant.dart';
 import '/configmaps.dart';
 
 class AssistantMethods {
+  static const String _availableDriversPath = 'availableDrivers';
+  static bool _isGeoFireInitialized = false;
+
+  static Future<void> _ensureGeoFireInitialized() async {
+    if (_isGeoFireInitialized) {
+      return;
+    }
+    await Geofire.initialize(_availableDriversPath);
+    _isGeoFireInitialized = true;
+  }
+
   // decode the coordinate into a readable address
   // static Future<String> searchCoordinateAddress(
   //     Position position, context) async {
@@ -93,14 +99,16 @@ class AssistantMethods {
   }
 
   // stop notification from and to db for driver after accepted a ride
-  static void disableHomeTabLiveLocationUpdates() {
+  static Future<void> disableHomeTabLiveLocationUpdates() async {
     homeTabPageStreamSubscription?.pause();
-    Geofire.removeLocation(currentfirebaseUser!.uid);
+    await _ensureGeoFireInitialized();
+    await Geofire.removeLocation(currentfirebaseUser!.uid);
   }
 
-  static void enabelHomeTabLiveLocationUpdates() {
+  static Future<void> enabelHomeTabLiveLocationUpdates() async {
     homeTabPageStreamSubscription?.resume();
-    Geofire.setLocation(
+    await _ensureGeoFireInitialized();
+    await Geofire.setLocation(
       currentfirebaseUser!.uid,
       currentPosition.latitude,
       currentPosition.longitude,

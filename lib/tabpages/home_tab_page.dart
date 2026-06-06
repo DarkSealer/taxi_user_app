@@ -13,7 +13,7 @@ import '/configmaps.dart';
 import '/main.dart';
 
 class HomeTabPage extends StatefulWidget {
-  HomeTabPage({Key? key}) : super(key: key);
+  const HomeTabPage({super.key});
 
   @override
   State<HomeTabPage> createState() => _HomeTabPageState();
@@ -108,9 +108,19 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   // get the user current position
   void locatePosition() async {
-    await Geolocator.requestPermission();
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    final bool hasPermission = await _ensureLocationPermission();
+    if (!hasPermission) {
+      return;
+    }
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+    } on PermissionDeniedException {
+      _showLocationPermissionDeniedMessage();
+      return;
+    }
 
     currentPosition = position;
     LatLng latLngPosition = LatLng(position.latitude, position.longitude);
@@ -127,7 +137,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void getCurrentDriverInfo() async {
-    currentfirebaseUser = await FirebaseAuth.instance.currentUser!;
+    currentfirebaseUser = FirebaseAuth.instance.currentUser!;
 
     driversRef.child(currentfirebaseUser!.uid).get().then((dataSnapshot) {
       if (dataSnapshot.value != null) {
@@ -165,72 +175,89 @@ class _HomeTabPageState extends State<HomeTabPage> {
             locatePosition();
           },
         ),
-        //online / offline driver Container
-        Container(
-          height: 140,
-          width: double.infinity,
-          color: Colors.black54,
-        ),
         Positioned(
-          top: 60,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: driverStatusColor,
+          top: 52,
+          left: 16,
+          right: 16,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isDriverAvailable ? "You are online" : "You are offline",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: (isDriverAvailable
+                                  ? Colors.green
+                                  : const Color(0xFFEF4444))
+                              .withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          isDriverAvailable ? "ONLINE" : "OFFLINE",
+                          style: TextStyle(
+                            color: isDriverAvailable
+                                ? Colors.green
+                                : const Color(0xFFEF4444),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    // do something
-                    if (!isDriverAvailable) {
-                      makeDriverOnlineNow();
-                      getLocationLiveUpdates();
+                  const SizedBox(height: 10),
+                  Semantics(
+                    label: isDriverAvailable
+                        ? "Go offline button"
+                        : "Go online button",
+                    button: true,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDriverAvailable
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFF171717),
+                      ),
+                      onPressed: () {
+                        if (!isDriverAvailable) {
+                          makeDriverOnlineNow();
+                          getLocationLiveUpdates();
 
-                      setState(() {
-                        driverStatusColor = Colors.green;
-                        driverStatusText = "Online Now  ";
-                        isDriverAvailable = true;
-                      });
+                          setState(() {
+                            driverStatusColor = Colors.green;
+                            driverStatusText = "Online Now";
+                            isDriverAvailable = true;
+                          });
 
-                      displayToastMessage("You are Online Now.", context);
-                      return;
-                    }
+                          displayToastMessage("You are online now.", context);
+                          return;
+                        }
 
-                    makeDriverOfflineNow();
+                        makeDriverOfflineNow();
 
-                    setState(() {
-                      driverStatusColor = Colors.red;
-                      driverStatusText = "Offline Now - Go Online  ";
-                      isDriverAvailable = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(17),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          driverStatusText,
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                        const Icon(
-                          Icons.phone_android,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ],
+                        setState(() {
+                          driverStatusColor = Colors.red;
+                          driverStatusText = "Offline Now - Go Online";
+                          isDriverAvailable = false;
+                        });
+                      },
+                      child:
+                          Text(isDriverAvailable ? "Go Offline" : "Go Online"),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ],
@@ -242,12 +269,23 @@ class _HomeTabPageState extends State<HomeTabPage> {
       driverId: currentfirebaseUser!.uid,
     );
     rideRequestRef = null;
-    displayToastMessage("You are Offline Now.", context);
+    displayToastMessage("You are offline now.", context);
   }
 
   void makeDriverOnlineNow() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    final bool hasPermission = await _ensureLocationPermission();
+    if (!hasPermission) {
+      return;
+    }
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+    } on PermissionDeniedException {
+      _showLocationPermissionDeniedMessage();
+      return;
+    }
 
     currentPosition = position;
 
@@ -261,6 +299,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void getLocationLiveUpdates() {
+    Geolocator.checkPermission().then((permission) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        _showLocationPermissionDeniedMessage();
+      }
+    });
     homeTabPageStreamSubscription =
         Geolocator.getPositionStream().listen((Position position) {
       currentPosition = position;
@@ -272,6 +316,41 @@ class _HomeTabPageState extends State<HomeTabPage> {
       }
       LatLng latlng = LatLng(position.latitude, position.longitude);
       newGoogleMapController.animateCamera(CameraUpdate.newLatLng(latlng));
+    }, onError: (Object error) {
+      if (error is PermissionDeniedException) {
+        _showLocationPermissionDeniedMessage();
+        homeTabPageStreamSubscription?.cancel();
+      }
     });
+  }
+
+  Future<bool> _ensureLocationPermission() async {
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!isLocationServiceEnabled) {
+      displayToastMessage(
+        "Please enable location service to continue.",
+        context,
+      );
+      return false;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      _showLocationPermissionDeniedMessage();
+      return false;
+    }
+    return true;
+  }
+
+  void _showLocationPermissionDeniedMessage() {
+    displayToastMessage(
+      "Location permission denied. Please allow location access.",
+      context,
+    );
   }
 }

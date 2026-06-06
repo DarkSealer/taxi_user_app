@@ -4,151 +4,134 @@ import '/configmaps.dart';
 import '/main.dart';
 import '/screens/mainscreen.dart';
 
-class CarInfoScreen extends StatelessWidget {
-  CarInfoScreen({Key? key}) : super(key: key);
+class CarInfoScreen extends StatefulWidget {
+  CarInfoScreen({super.key});
   static const String idScreen = "carinfo";
 
-  TextEditingController carModelTextEditingController = TextEditingController();
-  TextEditingController carNumberTextEditingController =
+  @override
+  State<CarInfoScreen> createState() => _CarInfoScreenState();
+}
+
+class _CarInfoScreenState extends State<CarInfoScreen> {
+  final TextEditingController carModelTextEditingController =
       TextEditingController();
-  TextEditingController carColorTextEditingController = TextEditingController();
+  final TextEditingController carNumberTextEditingController =
+      TextEditingController();
+  final TextEditingController carColorTextEditingController =
+      TextEditingController();
   String selectedCarType = 'uber-go';
-  List<String> carTypesList = ['uber-x', 'uber-go', 'bike'];
+  final List<String> carTypesList = ['uber-x', 'uber-go', 'bike'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             children: [
-              const SizedBox(
-                height: 22,
-              ),
+              const SizedBox(height: 16),
               Image.asset(
                 "images/logo.png",
-                width: 390,
-                height: 250,
+                width: 240,
+                height: 170,
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(22, 22, 22, 32),
+              const SizedBox(height: 18),
+              Text(
+                "Vehicle Details",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Add your vehicle information to start driving.",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFF0F0F0)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0F000000),
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Enter Car Details",
-                      style: TextStyle(
-                        fontFamily: "Brand",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 26,
-                    ),
                     TextField(
                       controller: carModelTextEditingController,
                       decoration: const InputDecoration(
                         labelText: "Car Model",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
+                        prefixIcon: Icon(Icons.directions_car_outlined),
                       ),
-                      style: const TextStyle(fontSize: 15),
+                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: carNumberTextEditingController,
                       decoration: const InputDecoration(
-                        labelText: "Car Number",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
+                        labelText: "Plate Number",
+                        prefixIcon: Icon(Icons.confirmation_number_outlined),
                       ),
-                      style: const TextStyle(fontSize: 15),
+                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: carColorTextEditingController,
                       decoration: const InputDecoration(
                         labelText: "Car Color",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
+                        prefixIcon: Icon(Icons.palette_outlined),
                       ),
-                      style: const TextStyle(fontSize: 15),
+                      textInputAction: TextInputAction.done,
                     ),
-                    const SizedBox(
-                      height: 26,
-                    ),
-                    DropdownButton(
-                      iconSize: 40,
-                      hint: const Text('Please choose a Ride Type'),
-                      value: selectedCarType,
-                      items: carTypesList.map((car) {
-                        return DropdownMenuItem(
-                          child: Text(car),
-                          value: car,
-                        );
-                      }).toList(),
+                    const SizedBox(height: 14),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: "Ride Type",
+                        prefixIcon: Icon(Icons.local_taxi_outlined),
+                      ),
+                      initialValue: selectedCarType,
+                      items: carTypesList
+                          .map((car) => DropdownMenuItem(
+                                value: car,
+                                child: Text(car.toUpperCase()),
+                              ))
+                          .toList(),
                       onChanged: (newValue) {
-                        selectedCarType = newValue.toString();
-                        displayToastMessage(selectedCarType, context);
+                        setState(() {
+                          selectedCarType = newValue ?? selectedCarType;
+                        });
                       },
                     ),
-                    const SizedBox(height: 42),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.secondary,
-                        ),
-                        onPressed: () {
-                          if (carModelTextEditingController.text.isEmpty) {
-                            displayToastMessage(
-                                "Please enter your car Model", context);
-                            return;
-                          }
-                          if (carNumberTextEditingController.text.isEmpty) {
-                            displayToastMessage(
-                                "Please enter your car registration Number",
-                                context);
-                            return;
-                          }
-                          if (carColorTextEditingController.text.isEmpty) {
-                            displayToastMessage(
-                                "Please enter your car Color", context);
-                            return;
-                          }
-                          if (selectedCarType.isEmpty) {
-                            displayToastMessage(
-                                "Please select a car type", context);
-                            return;
-                          }
+                    const SizedBox(height: 18),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (carModelTextEditingController.text.isEmpty) {
+                          displayToastMessage("Please enter your car model.", context);
+                          return;
+                        }
+                        if (carNumberTextEditingController.text.isEmpty) {
+                          displayToastMessage(
+                              "Please enter your car plate number.", context);
+                          return;
+                        }
+                        if (carColorTextEditingController.text.isEmpty) {
+                          displayToastMessage("Please enter your car color.", context);
+                          return;
+                        }
+                        if (selectedCarType.isEmpty) {
+                          displayToastMessage("Please select a ride type.", context);
+                          return;
+                        }
 
-                          saveDriverCarInfo(context);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(17),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                "Next",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 26,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                        saveDriverCarInfo(context);
+                      },
+                      child: const Text("Continue"),
                     ),
                   ],
                 ),

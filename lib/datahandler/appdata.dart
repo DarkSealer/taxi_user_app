@@ -4,8 +4,8 @@ import 'package:taxi_driver_app/models/history.dart';
 import '/models/address.dart';
 
 class AppData extends ChangeNotifier {
-  late Address? pickUpLocation = null;
-  late Address? dropOffLocation = null;
+  Address? pickUpLocation;
+  Address? dropOffLocation;
   String earnings = "0";
   int tripCounter = 0;
   List<String> tripHistoryKeys = [];

@@ -11,14 +11,18 @@ import '/widgets/progressdialog.dart';
 import '/screens/loginscreen.dart';
 
 class RegisterScreen extends StatelessWidget {
-  RegisterScreen({Key? key}) : super(key: key);
+  RegisterScreen({super.key});
 
   static const String idScreen = "register";
 
-  TextEditingController nameTextEditingController = TextEditingController();
-  TextEditingController emailTextEditingController = TextEditingController();
-  TextEditingController phoneTextEditingController = TextEditingController();
-  TextEditingController passwordTextEditingController = TextEditingController();
+  final TextEditingController nameTextEditingController =
+      TextEditingController();
+  final TextEditingController emailTextEditingController =
+      TextEditingController();
+  final TextEditingController phoneTextEditingController =
+      TextEditingController();
+  final TextEditingController passwordTextEditingController =
+      TextEditingController();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   late final AuthGateway _authGateway = AuthGateway(_firebaseAuth);
@@ -26,188 +30,133 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        // width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 20,
-            ),
+          children: [
+            const SizedBox(height: 20),
             const Image(
               image: AssetImage("images/logo.png"),
-              width: 390,
-              height: 250,
+              width: 240,
+              height: 170,
               alignment: Alignment.center,
             ),
-            const SizedBox(
-              height: 1,
-            ),
-            const Text(
-              "Inregistreaza un driver",
+            const SizedBox(height: 18),
+            Text(
+              "Create Driver Account",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: "Bolt",
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Padding(
+            const SizedBox(height: 8),
+            Text(
+              "Set up your profile to start accepting trips.",
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Container(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(
-                    height: 1,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFF0F0F0)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0F000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
                   ),
+                ],
+              ),
+              child: Column(
+                children: [
                   TextField(
                     keyboardType: TextInputType.name,
                     controller: nameTextEditingController,
                     decoration: const InputDecoration(
-                      labelText: "Nume",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      labelText: "Full name",
+                      prefixIcon: Icon(Icons.person_outline),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.next,
                   ),
+                  const SizedBox(height: 12),
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     controller: emailTextEditingController,
                     decoration: const InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      prefixIcon: Icon(Icons.email_outlined),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.next,
                   ),
+                  const SizedBox(height: 12),
                   TextField(
                     keyboardType: TextInputType.phone,
                     controller: phoneTextEditingController,
                     decoration: const InputDecoration(
-                      labelText: "Telefon",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      labelText: "Phone number",
+                      prefixIcon: Icon(Icons.phone_outlined),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.next,
                   ),
+                  const SizedBox(height: 12),
                   TextField(
                     obscureText: true,
                     controller: passwordTextEditingController,
                     decoration: const InputDecoration(
-                      labelText: "Parola",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      labelText: "Password",
+                      prefixIcon: Icon(Icons.lock_outline),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.done,
                   ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
+                  const SizedBox(height: 18),
                   ElevatedButton(
                     onPressed: () {
-                      // print("Register Clicked");
-
-                      // check the fields
                       bool emailValid = RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(emailTextEditingController.text);
                       if (nameTextEditingController.text.length < 4) {
                         displayToastMessage(
-                          "Numele trebuie sa contina cel putin 4 caractere",
+                          "Name must be at least 4 characters.",
                           context,
                         );
                         return;
                       } else if (!emailValid) {
                         displayToastMessage(
-                          "Te rugam sa introduci o adresa de email valida",
+                          "Please enter a valid email address.",
                           context,
                         );
                         return;
                       } else if (phoneTextEditingController.text.length < 10 ||
                           phoneTextEditingController.text.length > 12) {
                         displayToastMessage(
-                          "Te rugam sa introduci un numar de telefon valid",
+                          "Please enter a valid phone number.",
                           context,
                         );
                         return;
                       } else if (passwordTextEditingController.text.length <
                           6) {
                         displayToastMessage(
-                          "Te rugam sa introduci o parola de cel putin 6 caractere",
+                          "Password must be at least 6 characters.",
                           context,
                         );
                         return;
                       }
 
-                      // register the user
                       registerNewUser(context);
                     },
-                    child: const SizedBox(
-                      height: 50,
-                      child: Center(
-                        child: Text(
-                          "Inregistreaza Cont",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontFamily: "Bold",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: const Text("Create Account"),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                print("Login Clicked");
-
                 Navigator.pushNamedAndRemoveUntil(
                     context, LoginScreen.idScreen, (route) => false);
               },
-              child: const SizedBox(
-                height: 50,
-                child: Center(
-                  child: Text(
-                    "Ai deja un cont? Autentifica-te aici.",
-                    style: TextStyle(
-                      // color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: "Bold",
-                    ),
-                  ),
-                ),
-              ),
+              child: const Text("Already have an account? Sign in."),
             ),
           ],
         ),
@@ -220,51 +169,49 @@ class RegisterScreen extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return ProgressDialog(
-            message: "Se inregistreaza. Va rugam asteptati.",
+            message: "Creating account. Please wait...",
           );
         });
-    final firebaseUser = (await _authGateway
-            .register(
-      email: emailTextEditingController.text,
-      password: passwordTextEditingController.text,
-    )
-            .catchError((errMesg) {
-      // inchide panoul de loading
+    User? firebaseUser;
+    try {
+      final credential = await _authGateway.register(
+        email: emailTextEditingController.text,
+        password: passwordTextEditingController.text,
+      );
+      firebaseUser = credential.user;
+    } catch (errMesg) {
+      if (!context.mounted) {
+        return;
+      }
       Navigator.pop(context);
       displayToastMessage(
         "Error: $errMesg",
         context,
       );
-    }))
-        .user;
+      return;
+    }
 
     if (firebaseUser != null) // user created
     {
-      // save user info to database
+      if (!context.mounted) {
+        return;
+      }
       Map userDataMap = {
         "name": nameTextEditingController.text.trim(),
         "phone": phoneTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
       };
 
-      // print(
-      //     "Name: ${nameTextEditingController.text}, Phone: ${phoneTextEditingController.text}, Email: ${emailTextEditingController.text}");
-
       driversRef.child(firebaseUser.uid).set(userDataMap);
       currentfirebaseUser = firebaseUser;
 
-      // display success message
-      displayToastMessage(
-          "Felicitari. Contul dumneavoastra a fost creat cu succes", context);
+      displayToastMessage("Your account was created successfully.", context);
 
-      // load the MainScreen
       Navigator.pushNamed(context, CarInfoScreen.idScreen);
       return;
     }
 
-    // inchide panoul de loading
     Navigator.pop(context);
-    // error occured - display error message
-    displayToastMessage("Utilizatorul nu a putut fi creat", context);
+    displayToastMessage("User account could not be created.", context);
   }
 }

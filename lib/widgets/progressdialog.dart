@@ -1,37 +1,40 @@
 import 'package:flutter/material.dart';
 
 class ProgressDialog extends StatelessWidget {
-  String? message;
-  ProgressDialog({this.message});
+  final String? message;
+  const ProgressDialog({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.yellow,
+      backgroundColor: Colors.transparent,
       child: Container(
-        margin: const EdgeInsets.all(15),
+        margin: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(18),
           child: Row(
-            children: <Widget>[
-              SizedBox(
+            children: [
+              const SizedBox(
                 width: 6,
               ),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2.5),
               ),
-              SizedBox(
-                width: 26,
-              ),
-              Text(
-                message!,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 10,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  message ?? "Please wait...",
+                  style: const TextStyle(
+                    color: Color(0xFF171717),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],

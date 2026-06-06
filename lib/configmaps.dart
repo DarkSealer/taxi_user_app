@@ -9,7 +9,7 @@ import '/models/all_users.dart';
 import 'models/drivers.dart';
 
 const String mapKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
-String language = "ro";
+String language = "en";
 User? firebaseUser;
 Users? userCurrentInfo;
 User? currentfirebaseUser;

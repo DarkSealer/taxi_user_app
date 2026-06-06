@@ -40,7 +40,7 @@ dependencies:
   flutter_polyline_points: ^3.0.1
   font_awesome_flutter: ^10.10.0
   animated_text_kit: ^4.2.1
-  flutter_geofire: ^2.0.1
+  flutter_geofire: ^2.0.7
   firebase_messaging: ^15.2.10
   audioplayers: ^6.5.0
   maps_toolkit: ^2.0.0
@@ -68,6 +68,7 @@ dev_dependencies:
 
 dependency_overrides:
   file: ^7.0.1
+  flutter_plugin_android_lifecycle: ^2.0.34
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

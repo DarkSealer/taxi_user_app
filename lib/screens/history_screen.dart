@@ -4,7 +4,7 @@ import 'package:taxi_driver_app/datahandler/appdata.dart';
 import 'package:taxi_driver_app/widgets/history_item.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  const HistoryScreen({super.key});
 
   @override
   _HistoryScreenState createState() => _HistoryScreenState();
@@ -16,12 +16,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trip History'),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF171717),
+        elevation: 0,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.keyboard_arrow_left),
+          icon: const Icon(Icons.keyboard_arrow_left_rounded),
         ),
       ),
       body: ListView.separated(

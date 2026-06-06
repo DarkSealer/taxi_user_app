@@ -6,7 +6,7 @@ import '/tabpages/profile_tab_page.dart';
 import '/tabpages/rating_tab_page.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
   static const String idScreen = "mainScreen";
 
   @override
@@ -73,10 +73,7 @@ class _MainScreenState extends State<MainScreen>
             label: "Account",
           ),
         ],
-        unselectedItemColor: Colors.black54,
-        selectedItemColor: Colors.yellow,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: const TextStyle(fontSize: 12),
         showUnselectedLabels: true,
         currentIndex: selectedIndex,
         onTap: onItemClicked,

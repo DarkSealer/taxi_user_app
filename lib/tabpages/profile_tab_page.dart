@@ -7,145 +7,116 @@ import 'package:taxi_driver_app/screens/loginscreen.dart';
 import '/configmaps.dart';
 
 class ProfileTabPage extends StatelessWidget {
-  const ProfileTabPage({Key? key}) : super(key: key);
+  const ProfileTabPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black87,
-        body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                driversInformation.name,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundColor: const Color(0xFF171717),
+              child: Text(
+                driversInformation.name.isNotEmpty
+                    ? driversInformation.name[0].toUpperCase()
+                    : "D",
                 style: const TextStyle(
-                  fontSize: 65,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Signatra',
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              Text(
-                title + ' driver',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.blueGrey[200],
-                    letterSpacing: 2.5,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Brand'),
+            ),
+            const SizedBox(height: 14),
+            Center(
+              child: Text(
+                driversInformation.name,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(
-                height: 20,
-                width: 200,
-                child: Divider(
-                  color: Colors.white,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Center(
+              child: Text(
+                '$title driver',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(
-                height: 40,
+            ),
+            const SizedBox(height: 18),
+            InfoCard(
+              text: driversInformation.phone,
+              icon: Icons.phone_outlined,
+              onPressed: () {},
+            ),
+            InfoCard(
+              text: driversInformation.email,
+              icon: Icons.email_outlined,
+              onPressed: () {},
+            ),
+            InfoCard(
+              text:
+                  '${driversInformation.car_color} ${driversInformation.car_model} ${driversInformation.car_number}',
+              icon: Icons.directions_car_outlined,
+              onPressed: () {},
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
               ),
-              InfoCard(
-                text: driversInformation.phone,
-                icon: Icons.phone,
-                onPressed: () {
-                  print('this is phone');
-                },
-              ),
-              InfoCard(
-                text: driversInformation.email,
-                icon: Icons.email,
-                onPressed: () {
-                  print('this is email');
-                },
-              ),
-              InfoCard(
-                text: driversInformation.car_color +
-                    ' ' +
-                    driversInformation.car_model +
-                    ' ' +
-                    driversInformation.car_number,
-                icon: Icons.car_repair,
-                onPressed: () {
-                  print('this is your car');
-                },
-              ),
-              GestureDetector(
-                onTap: () {
-                  // Log out
-                  Geofire.removeLocation(currentfirebaseUser!.uid);
-                  rideRequestRef!.onDisconnect();
-                  rideRequestRef!.remove();
-                  rideRequestRef = null;
+              onPressed: () async {
+                await Geofire.initialize('availableDrivers');
+                await Geofire.removeLocation(currentfirebaseUser!.uid);
+                rideRequestRef?.onDisconnect();
+                rideRequestRef?.remove();
+                rideRequestRef = null;
 
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, LoginScreen.idScreen, (route) => false);
-                },
-                child: const Card(
-                  color: Colors.red,
-                  margin: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 115,
-                  ),
-                  child: ListTile(
-                    trailing: Icon(
-                      Icons.follow_the_signs_outlined,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      'Sign out',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: 'Brand',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ));
+                FirebaseAuth.instance.signOut();
+                if (!context.mounted) {
+                  return;
+                }
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  LoginScreen.idScreen,
+                  (route) => false,
+                );
+              },
+              child: const Text('Sign out'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
 class InfoCard extends StatelessWidget {
   final String text;
   final IconData icon;
-  Function onPressed;
-  InfoCard(
-      {Key? key,
+  final VoidCallback onPressed;
+  const InfoCard(
+      {super.key,
       required this.text,
       required this.icon,
-      required this.onPressed})
-      : super(key: key);
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed(),
-      child: Card(
-        color: Colors.white,
-        margin: const EdgeInsets.symmetric(
-          horizontal: 25,
-          vertical: 10,
+    return Card(
+      child: ListTile(
+        onTap: onPressed,
+        leading: Icon(
+          icon,
+          color: const Color(0xFF171717),
         ),
-        child: ListTile(
-          leading: Icon(
-            icon,
-            color: Colors.black87,
-          ),
-          title: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 16,
-              fontFamily: 'Brand',
-              fontWeight: FontWeight.bold,
-            ),
+        title: Text(
+          text,
+          style: const TextStyle(
+            color: Color(0xFF171717),
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

@@ -290,10 +290,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_geofire
-      sha256: "315ac116ce142cee46ffaa68eba5156b520f015a87af2f9cb0876dcbba168782"
+      sha256: fa9e539a47c8caf92dde4974c2c57dcc42a57588191570df718fc535e8509f1e
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.7"
   flutter_hooks:
     dependency: "direct main"
     description:
@@ -311,13 +311,13 @@ packages:
     source: hosted
     version: "5.0.0"
   flutter_plugin_android_lifecycle:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "5c574d21b98ec92adab05ead10afd2b13ff5856c7ca79696edb338a9dd8ed387"
+      sha256: "38d1c268de9097ff59cf0e844ac38759fc78f76836d37edad06fa21e182055a0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.5"
+    version: "2.0.34"
   flutter_polyline_points:
     dependency: "direct main"
     description:

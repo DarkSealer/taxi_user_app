@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +10,7 @@ import '/widgets/dividerwidget.dart';
 import '/widgets/progressdialog.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({super.key});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -33,15 +31,15 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Column(
         children: [
           Container(
-            height: 215,
+            height: 235,
             decoration: const BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 6,
-                  spreadRadius: 0.5,
-                  offset: Offset(0.7, 0.7),
+                  color: Color(0x14000000),
+                  blurRadius: 12,
+                  spreadRadius: 0.2,
+                  offset: Offset(0, 6),
                 ),
               ],
             ),
@@ -63,16 +61,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: const Icon(Icons.arrow_back),
+                        child: const Icon(Icons.arrow_back_ios_new_rounded),
                       ),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Set Drop Off",
-                          style: TextStyle(
-                            fontFamily: "Brand",
-                            fontWeight: FontWeight.w900,
-                            fontSize: 18,
-                          ),
+                          "Set Destination",
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                       )
                     ],
@@ -93,18 +87,16 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ),
+                            color: const Color(0xFFF5F6F8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(3),
                             child: TextField(
                               controller: pickUpTextController,
                               decoration: InputDecoration(
-                                hintText: "PickUp Location",
-                                fillColor: Colors.grey[400],
+                                hintText: "Pickup location",
+                                fillColor: const Color(0xFFF5F6F8),
                                 filled: true,
                                 border: InputBorder.none,
                                 isDense: true,
@@ -136,10 +128,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ),
+                            color: const Color(0xFFF5F6F8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(3),
@@ -152,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               controller: dropOffTextController,
                               decoration: InputDecoration(
                                 hintText: "Where to?",
-                                fillColor: Colors.grey[400],
+                                fillColor: const Color(0xFFF5F6F8),
                                 filled: true,
                                 border: InputBorder.none,
                                 isDense: true,
@@ -173,9 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           // tile for displaying predictions
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           (placePredictionList.isNotEmpty)
               ? Padding(
                   padding: const EdgeInsets.symmetric(
@@ -195,7 +183,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     physics: const ClampingScrollPhysics(),
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
         ],
       ),
     );
@@ -230,8 +218,7 @@ class _SearchScreenState extends State<SearchScreen> {
 class PredictionTile extends StatelessWidget {
   final PlacePredictions placePredictions;
 
-  const PredictionTile({Key? key, required this.placePredictions})
-      : super(key: key);
+  const PredictionTile({super.key, required this.placePredictions});
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +283,7 @@ class PredictionTile extends StatelessWidget {
     showDialog(
         context: context,
         builder: (BuildContext context) =>
-            ProgressDialog(message: "Setting Dropoff. Please wait..."));
+            ProgressDialog(message: "Setting destination. Please wait..."));
 
     String placeDetailsUrl =
         "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
@@ -320,8 +307,6 @@ class PredictionTile extends StatelessWidget {
 
       Provider.of<AppData>(context, listen: false)
           .updateDropOffLocationAddress(address);
-      print("This is the drop off location: ${address.placeName}");
-
       Navigator.pop(context, "obtainDirection");
     }
   }

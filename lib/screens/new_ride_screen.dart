@@ -15,8 +15,8 @@ import '/models/ride_details.dart';
 import '/widgets/progressdialog.dart';
 
 class NewRideScreen extends StatefulWidget {
-  RideDetails rideDetails;
-  NewRideScreen({Key? key, required this.rideDetails}) : super(key: key);
+  final RideDetails rideDetails;
+  NewRideScreen({super.key, required this.rideDetails});
 
   static final CameraPosition _kGooglePlex = const CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -30,9 +30,9 @@ class NewRideScreen extends StatefulWidget {
 class _NewRideScreenState extends State<NewRideScreen> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   late GoogleMapController newRideGoogleMapController;
-  Set<Marker> markersSet = Set<Marker>();
-  Set<Circle> circleSet = Set<Circle>();
-  Set<Polyline> polylineSet = Set<Polyline>();
+  Set<Marker> markersSet = <Marker>{};
+  Set<Circle> circleSet = <Circle>{};
+  Set<Polyline> polylineSet = <Polyline>{};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints(apiKey: mapKey);
   double mapPaddingFromBottom = 0;
@@ -159,15 +159,15 @@ class _NewRideScreenState extends State<NewRideScreen> {
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black38,
-                    blurRadius: 16,
-                    spreadRadius: 0.5,
-                    offset: Offset(0.7, 0.7),
+                    color: Color(0x1A000000),
+                    blurRadius: 18,
+                    spreadRadius: 0.3,
+                    offset: Offset(0, -4),
                   ),
                 ],
               ),
@@ -180,10 +180,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
                     Text(
                       durationRide,
                       style: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Brand",
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF404040),
+                      ),
                     ),
                     const SizedBox(
                       height: 6,
@@ -193,15 +193,11 @@ class _NewRideScreenState extends State<NewRideScreen> {
                       children: [
                         Text(
                           widget.rideDetails.rider_name,
-                          style: const TextStyle(
-                            fontFamily: "Brand",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const Padding(
                           padding: EdgeInsets.only(right: 10),
-                          child: Icon(Icons.phone_android),
+                          child: Icon(Icons.phone_outlined),
                         ),
                       ],
                     ),
@@ -219,14 +215,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
                           width: 18,
                         ),
                         Expanded(
-                          child: Container(
-                            child: Text(
-                              widget.rideDetails.pickup_address,
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          child: Text(
+                            widget.rideDetails.pickup_address,
+                            style: const TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -243,14 +235,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
                           width: 18,
                         ),
                         Expanded(
-                          child: Container(
-                            child: Text(
-                              widget.rideDetails.dropoff_address,
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          child: Text(
+                            widget.rideDetails.dropoff_address,
+                            style: const TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -276,7 +264,7 @@ class _NewRideScreenState extends State<NewRideScreen> {
 
                             setState(() {
                               btnTitle = "Start Trip";
-                              btnColor = Colors.green;
+                              btnColor = const Color(0xFF171717);
                             });
 
                             // display a message to let the user know that is loading
@@ -307,7 +295,7 @@ class _NewRideScreenState extends State<NewRideScreen> {
 
                             setState(() {
                               btnTitle = "End Trip";
-                              btnColor = Colors.redAccent;
+                              btnColor = const Color(0xFFEF4444);
                             });
 
                             // start the timer
@@ -326,9 +314,10 @@ class _NewRideScreenState extends State<NewRideScreen> {
                               Text(
                                 btnTitle,
                                 style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
                               Icon(
                                 Icons.directions_car,
@@ -499,7 +488,6 @@ class _NewRideScreenState extends State<NewRideScreen> {
   void updateRideDetails() async {
     if (!isRequestingDirection) {
       isRequestingDirection = true;
-      if (myPosition == null) return;
 
       var posLatLng = LatLng(myPosition.latitude, myPosition.longitude);
       LatLng destinationLatLng;

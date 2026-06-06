@@ -17,7 +17,7 @@ class RequestAssistant {
 
       // eroare conectare
       return "failed";
-    } on Exception catch (e) {
+    } on Exception {
       // TODO
       return "failed";
     }

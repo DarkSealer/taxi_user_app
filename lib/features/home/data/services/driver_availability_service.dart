@@ -8,28 +8,40 @@ class DriverAvailabilityService {
   });
 
   final DatabaseReference? currentRequestRef;
+  static const String _availableDriversPath = 'availableDrivers';
+  static bool _isGeoFireInitialized = false;
+
+  Future<void> _ensureGeoFireInitialized() async {
+    if (_isGeoFireInitialized) {
+      return;
+    }
+    await Geofire.initialize(_availableDriversPath);
+    _isGeoFireInitialized = true;
+  }
 
   Future<void> makeDriverOnline({
     required String driverId,
     required Position position,
   }) async {
-    Geofire.initialize('availableDrivers');
-    Geofire.setLocation(driverId, position.latitude, position.longitude);
+    await _ensureGeoFireInitialized();
+    await Geofire.setLocation(driverId, position.latitude, position.longitude);
     await currentRequestRef?.set('searching');
   }
 
   Future<void> makeDriverOffline({
     required String driverId,
   }) async {
-    Geofire.removeLocation(driverId);
+    await _ensureGeoFireInitialized();
+    await Geofire.removeLocation(driverId);
     currentRequestRef?.onDisconnect();
     await currentRequestRef?.remove();
   }
 
-  void updateLiveLocation({
+  Future<void> updateLiveLocation({
     required String driverId,
     required Position position,
-  }) {
-    Geofire.setLocation(driverId, position.latitude, position.longitude);
+  }) async {
+    await _ensureGeoFireInitialized();
+    await Geofire.setLocation(driverId, position.latitude, position.longitude);
   }
 }

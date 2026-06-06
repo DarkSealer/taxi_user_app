@@ -10,149 +10,111 @@ import 'registerscreen.dart';
 import 'mainscreen.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({super.key});
 
   static const String idScreen = "login";
 
-  TextEditingController emailTextEditingController = TextEditingController();
-  TextEditingController passwordTextEditingController = TextEditingController();
+  final TextEditingController emailTextEditingController =
+      TextEditingController();
+  final TextEditingController passwordTextEditingController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        // width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 35,
-            ),
+          children: [
+            const SizedBox(height: 28),
             const Image(
               image: AssetImage("images/logo.png"),
-              width: 390,
-              height: 250,
+              width: 240,
+              height: 170,
               alignment: Alignment.center,
             ),
-            const SizedBox(
-              height: 1,
-            ),
-            const Text(
-              "Autentificare ca driver",
+            const SizedBox(height: 18),
+            Text(
+              "Driver Sign In",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: "Bolt",
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Padding(
+            const SizedBox(height: 8),
+            Text(
+              "Welcome back. Continue to your driver dashboard.",
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Container(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(
-                    height: 1,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFF0F0F0)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0F000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
                   ),
+                ],
+              ),
+              child: Column(
+                children: [
                   TextField(
                     controller: emailTextEditingController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      prefixIcon: Icon(Icons.email_outlined),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.next,
                   ),
+                  const SizedBox(height: 12),
                   TextField(
                     controller: passwordTextEditingController,
                     obscureText: true,
                     decoration: const InputDecoration(
-                      labelText: "Parola",
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                      ),
+                      labelText: "Password",
+                      prefixIcon: Icon(Icons.lock_outline),
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
+                    textInputAction: TextInputAction.done,
                   ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
+                  const SizedBox(height: 18),
                   ElevatedButton(
                     onPressed: () {
-                      // print("Login Clicked");
-
-                      // check the fields
                       bool emailValid = RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(emailTextEditingController.text);
                       if (!emailValid) {
                         displayToastMessage(
-                          "Te rugam sa introduci o adresa de email valida.",
+                          "Please enter a valid email address.",
                           context,
                         );
                         return;
                       } else if (passwordTextEditingController.text.isEmpty) {
                         displayToastMessage(
-                          "Te rugam sa introduci o parola valida.",
+                          "Please enter a valid password.",
                           context,
                         );
                         return;
                       }
 
-                      // call login method
                       loginAndAuthentificateUser(context);
                     },
-                    child: const SizedBox(
-                      height: 50,
-                      child: Center(
-                        child: Text(
-                          "Autentificare",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontFamily: "Bold",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: const Text("Sign In"),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 10),
             TextButton(
               onPressed: () {
-                // print("Register Clicked");
                 Navigator.pushNamedAndRemoveUntil(
                     context, RegisterScreen.idScreen, (route) => false);
               },
-              child: const SizedBox(
-                height: 50,
-                child: Center(
-                  child: Text(
-                    "Nu ai cont? Inregistreaza-te aici.",
-                    style: TextStyle(
-                      // color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: "Bold",
-                    ),
-                  ),
-                ),
-              ),
+              child: const Text("No account yet? Create one."),
             ),
           ],
         ),
@@ -167,29 +129,31 @@ class LoginScreen extends StatelessWidget {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return ProgressDialog(message: "Se autentifica. Va rugam asteptati");
+          return ProgressDialog(message: "Signing in. Please wait...");
         },
         barrierDismissible: false);
 
-    final firebaseUser = (await _authGateway
-            .signIn(
-      email: emailTextEditingController.text,
-      password: passwordTextEditingController.text,
-    )
-            .catchError((errMsg) {
-      Navigator.pop(context); // close the loading widget
+    User? firebaseUser;
+    try {
+      final credential = await _authGateway.signIn(
+        email: emailTextEditingController.text,
+        password: passwordTextEditingController.text,
+      );
+      firebaseUser = credential.user;
+    } catch (errMsg) {
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.pop(context);
       displayToastMessage("Error: $errMsg", context);
-    }))
-        .user;
+      return;
+    }
 
     if (firebaseUser != null) // user logged in
     {
-      print("User connected");
-
-      //     await userRef.once().then((DataSnapshot snapshot) {
-      //   print('Data : ${snapshot.value}');
-      // });
-
+      if (!context.mounted) {
+        return;
+      }
       await driversRef.child(firebaseUser.uid).get().then((DataSnapshot snap) {
         if (snap.value != null) {
           currentfirebaseUser = firebaseUser;
@@ -197,26 +161,20 @@ class LoginScreen extends StatelessWidget {
           Navigator.pushNamedAndRemoveUntil(
               context, MainScreen.idScreen, (route) => false);
 
-          // afiseaza mesaj de autentificare
-          displayToastMessage("Sunteti conectact la contul dvs.", context);
+          displayToastMessage("You are now signed in.", context);
           return;
         }
 
         Navigator.pop(context);
         _authGateway.signOut();
-        displayToastMessage(
-            "Acest utilizator nu exista in baza de date", context);
+        displayToastMessage("This user was not found in the database.", context);
       });
       return;
     }
 
     Navigator.pop(context);
-    // error occured - display error message
     displayToastMessage(
-        "Va rugam sa verificati credentialele dvs si sa incercati din nou.",
+        "Please check your credentials and try again.",
         context);
-    // displayToastMessage(
-    // "A aparut o eroare. Va rugam sa incercati din nou",
-    // context);
   }
 }

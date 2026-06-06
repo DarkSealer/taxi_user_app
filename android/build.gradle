@@ -11,6 +11,25 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+subprojects { subproject ->
+    def setNamespaceIfMissing = {
+        def androidExt = subproject.extensions.findByName("android")
+        if (androidExt == null || !androidExt.hasProperty("namespace") ||
+            androidExt.namespace != null) {
+            return
+        }
+
+        def namespaceBase = subproject.group?.toString()?.trim()
+        if (!namespaceBase) {
+            namespaceBase = "com.legacy.${subproject.name.replace('-', '_')}"
+        }
+        androidExt.namespace = namespaceBase
+    }
+
+    subproject.plugins.withId("com.android.application", setNamespaceIfMissing)
+    subproject.plugins.withId("com.android.library", setNamespaceIfMissing)
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

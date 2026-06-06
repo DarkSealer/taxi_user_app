@@ -7,23 +7,22 @@ import 'package:taxi_driver_app/screens/new_ride_screen.dart';
 
 class NotificationDialog extends StatelessWidget {
   final RideDetails rideDetails;
-  const NotificationDialog({Key? key, required this.rideDetails})
-      : super(key: key);
+  const NotificationDialog({super.key, required this.rideDetails});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
       backgroundColor: Colors.transparent,
       elevation: 1,
       child: Container(
-        margin: const EdgeInsets.all(5),
+        margin: const EdgeInsets.all(8),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -40,9 +39,8 @@ class NotificationDialog extends StatelessWidget {
             const Text(
               "New Ride Request",
               style: TextStyle(
-                fontFamily: "Brand",
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 20,
               ),
             ),
             const SizedBox(
@@ -64,12 +62,10 @@ class NotificationDialog extends StatelessWidget {
                         width: 20,
                       ),
                       Expanded(
-                        child: Container(
-                          child: Text(
-                            rideDetails.pickup_address,
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
+                        child: Text(
+                          rideDetails.pickup_address,
+                          style: const TextStyle(
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -90,12 +86,10 @@ class NotificationDialog extends StatelessWidget {
                         width: 20,
                       ),
                       Expanded(
-                        child: Container(
-                          child: Text(
-                            rideDetails.dropoff_address,
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
+                        child: Text(
+                          rideDetails.dropoff_address,
+                          style: const TextStyle(
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -123,9 +117,9 @@ class NotificationDialog extends StatelessWidget {
                   TextButton(
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                      side: const BorderSide(color: Colors.red),
-                    ),
+                        borderRadius: BorderRadius.circular(18),
+                        side: const BorderSide(color: Colors.red),
+                      ),
                       foregroundColor: Colors.red,
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.all(8),
@@ -135,7 +129,7 @@ class NotificationDialog extends StatelessWidget {
                       Navigator.pop(context);
                     },
                     child: const Text(
-                      'Cancel',
+                      'Decline',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -148,12 +142,12 @@ class NotificationDialog extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
-                        side: const BorderSide(color: Colors.green),
+                        side: const BorderSide(color: Color(0xFF171717)),
                       ),
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color(0xFF171717),
                       foregroundColor: Colors.white,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       assetsAudioPlayer.stop();
                       checkAvailabilityOfRide(context);
                     },
@@ -174,30 +168,38 @@ class NotificationDialog extends StatelessWidget {
     );
   }
 
-  void checkAvailabilityOfRide(context) {
-    rideRequestRef?.get().then((snapShot) {
-      Navigator.pop(context);
-      String theRideId = '';
-      if (snapShot.value != null) {
-        theRideId = snapShot.value.toString();
-      } else {
-        displayToastMessage("Ride does not exist.", context);
-      }
+  void checkAvailabilityOfRide(BuildContext context) async {
+    final snapShot = await rideRequestRef?.get();
+    if (!context.mounted) {
+      return;
+    }
 
-      if (theRideId == rideDetails.ride_request_id) {
-        rideRequestRef?.set("accepted");
-        AssistantMethods.disableHomeTabLiveLocationUpdates();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => NewRideScreen(rideDetails: rideDetails)));
-      } else if (theRideId == "cancelled") {
-        displayToastMessage("Ride has been cancelled", context);
-      } else if (theRideId == "timeout") {
-        displayToastMessage("Tide has time out", context);
-      } else {
-        displayToastMessage("Ride does not exist", context);
+    Navigator.pop(context);
+    String theRideId = '';
+    if (snapShot?.value != null) {
+      theRideId = snapShot!.value.toString();
+    } else {
+      displayToastMessage("Ride does not exist.", context);
+    }
+
+    if (theRideId == rideDetails.ride_request_id) {
+      rideRequestRef?.set("accepted");
+      await AssistantMethods.disableHomeTabLiveLocationUpdates();
+      if (!context.mounted) {
+        return;
       }
-    });
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NewRideScreen(rideDetails: rideDetails),
+        ),
+      );
+    } else if (theRideId == "cancelled") {
+      displayToastMessage("Ride has been cancelled.", context);
+    } else if (theRideId == "timeout") {
+      displayToastMessage("Ride has timed out.", context);
+    } else {
+      displayToastMessage("Ride does not exist.", context);
+    }
   }
 }

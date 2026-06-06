@@ -5,83 +5,75 @@ import 'package:taxi_driver_app/screens/history_screen.dart';
 import 'dart:developer';
 
 class EarningTabPage extends StatelessWidget {
-  EarningTabPage({Key? key}) : super(key: key);
+  const EarningTabPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Colors.black87,
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 70),
-            child: Column(
-              children: [
-                const Text(
-                  'Total Earnings',
-                  style: TextStyle(color: Colors.white),
-                ),
-                Text(
-                  '\$${Provider.of<AppData>(context, listen: false).earnings}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 50,
-                    fontFamily: 'Brand',
-                    fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 20),
+              child: Column(
+                children: [
+                  Text(
+                    'Total Earnings',
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${Provider.of<AppData>(context, listen: false).earnings}',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(0),
-          ),
-          onPressed: () {
-            log('go to history page');
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HistoryScreen()));
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 30,
-              vertical: 18,
-            ),
-            child: Row(
-              children: [
-                Image.asset(
-                  'images/uberx.png',
-                  width: 70,
+          const SizedBox(height: 10),
+          Card(
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () {
+                log('go to history page');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HistoryScreen(),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
                 ),
-                const SizedBox(
-                  width: 16,
-                ),
-                const Text(
-                  'Total Trips',
-                  style: TextStyle(fontSize: 16),
-                ),
-                Expanded(
-                  child: Container(
-                    child: Text(
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'images/uberx.png',
+                      width: 52,
+                    ),
+                    const SizedBox(width: 14),
+                    Text(
+                      'Total Trips',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const Spacer(),
+                    Text(
                       Provider.of<AppData>(context, listen: false)
                           .tripCounter
                           .toString(),
-                      textAlign: TextAlign.end,
-                      style: const TextStyle(fontSize: 18),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-        Divider(
-          height: 2.0,
-          thickness: 2,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
